@@ -5,7 +5,6 @@ import Sidebar from '@/components/sidebar';
 import NavLinks from '@/components/nav-links';
 
 const roboto = Roboto({
-  variable: '--font-roboto',
   subsets: ['cyrillic'],
 });
 
@@ -21,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={`${roboto.variable} antialiased`}>
+      <body className={`${roboto.className} antialiased`}>
         <Sidebar />
         <header className="border-border bg-background fixed top-0 right-0 left-0 flex items-center border-b-2 lg:left-60">
           <NavLinks />

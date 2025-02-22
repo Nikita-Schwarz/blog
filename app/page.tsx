@@ -10,7 +10,7 @@ export default function Page() {
         </time>
       </div>
       <div>
-        <p className="leading-7 font-medium">
+        <p className="text-base leading-7 font-medium">
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. A nam autem
           error animi eos commodi voluptatum sapiente expedita! Labore sunt
           maxime quasi modi tempora adipisci molestias. Numquam ratione maiores
@@ -23,14 +23,14 @@ export default function Page() {
           perspiciatis itaque omnis, beatae aspernatur. Quidem voluptates
           tempora veritatis soluta culpa unde repudiandae. Unde, maxime nobis
           <br />
-          <Image
-            src={'/gallery/2.jpg'}
-            width={976}
-            height={549}
-            alt="test"
-            className="my-3 w-full"
-          />
         </p>
+        <Image
+          src={'/gallery/2.jpg'}
+          width={976}
+          height={549}
+          alt="test"
+          className="my-3 w-full"
+        />
       </div>
     </article>
   );

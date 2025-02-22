@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,7 +15,7 @@ import { usePathname } from 'next/navigation';
 
 const links = [
   { name: 'Главная', href: '/' },
-  { name: 'Походы', trigger: true },
+  { name: 'Походы', href: '/hiking', trigger: true },
   { name: 'Галерея', href: '/gallery' },
   { name: 'Снаряжение', href: '/equipment' },
 ];
@@ -28,18 +28,41 @@ export default function NavLinks() {
     left: 0,
   });
 
-  useEffect(() => {
+  const updateLineStyle = useCallback(() => {
     if (menuRef.current) {
-      const activeItem = menuRef.current.querySelector<HTMLAnchorElement>(
-        `a[href="${pathname}"]`,
+      const menuItems = Array.from(
+        menuRef.current.querySelectorAll<HTMLElement>('a[href], [data-href]'),
       );
-      console.log(activeItem?.offsetHeight);
+
+      let activeItem: HTMLElement | null = null;
+
+      for (const item of menuItems) {
+        const href =
+          item.getAttribute('href') || item.getAttribute('data-href');
+        if (href && pathname.startsWith(href)) {
+          if (
+            !activeItem ||
+            href.length > (activeItem.getAttribute('href')?.length || 0)
+          ) {
+            activeItem = item;
+          }
+        }
+      }
+
       if (activeItem) {
-        const { offsetWidth, offsetLeft } = activeItem;
-        setLineStyle({ width: offsetWidth, left: offsetLeft });
+        const { offsetWidth } = activeItem;
+        const { left: itemLeft } = activeItem.getBoundingClientRect();
+        const { left: parentLeft } = menuRef.current.getBoundingClientRect();
+        setLineStyle({ width: offsetWidth, left: itemLeft - parentLeft });
+      } else {
+        setLineStyle({ width: 0, left: 0 });
       }
     }
   }, [pathname]);
+
+  useEffect(() => {
+    updateLineStyle();
+  }, [pathname, updateLineStyle]);
 
   return (
     <NavigationMenu>
@@ -48,9 +71,11 @@ export default function NavLinks() {
           if (link.trigger === true) {
             return (
               <NavigationMenuItem key={index}>
-                <NavigationMenuTrigger>{link.name}</NavigationMenuTrigger>
+                <NavigationMenuTrigger data-href={link.href}>
+                  {link.name}
+                </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <Link href="/" legacyBehavior passHref>
+                  <Link href="/hiking/test" legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
@@ -63,7 +88,7 @@ export default function NavLinks() {
           } else {
             return (
               <NavigationMenuItem key={index}>
-                <Link href={link.href ? link.href : ''} legacyBehavior passHref>
+                <Link href={link.href} legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     {link.name}
                   </NavigationMenuLink>
