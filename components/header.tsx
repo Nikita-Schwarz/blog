@@ -20,7 +20,7 @@ const links = [
   { name: 'Снаряжение', href: '/equipment' },
 ];
 
-export default function NavLinks() {
+export default function Header() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLUListElement>(null);
   const [lineStyle, setLineStyle] = useState<{ width: number; left: number }>({
@@ -65,46 +65,50 @@ export default function NavLinks() {
   }, [pathname, updateLineStyle]);
 
   return (
-    <NavigationMenu>
-      <NavigationMenuList ref={menuRef}>
-        {links.map((link, index) => {
-          if (link.trigger === true) {
-            return (
-              <NavigationMenuItem key={index}>
-                <NavigationMenuTrigger data-href={link.href}>
-                  {link.name}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <Link href="/hiking/test" legacyBehavior passHref>
+    <header className="border-border bg-background fixed top-0 right-0 left-0 flex items-center border-b-2 lg:left-60">
+      <NavigationMenu>
+        <NavigationMenuList ref={menuRef}>
+          {links.map((link, index) => {
+            if (link.trigger === true) {
+              return (
+                <NavigationMenuItem key={index}>
+                  <NavigationMenuTrigger data-href={link.href}>
+                    {link.name}
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <Link href="/hiking/test" legacyBehavior passHref>
+                      <NavigationMenuLink
+                        className={navigationMenuTriggerStyle()}
+                      >
+                        TEST
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              );
+            } else {
+              return (
+                <NavigationMenuItem key={index}>
+                  <Link href={link.href} legacyBehavior passHref>
                     <NavigationMenuLink
                       className={navigationMenuTriggerStyle()}
                     >
-                      TEST
+                      {link.name}
                     </NavigationMenuLink>
                   </Link>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            );
-          } else {
-            return (
-              <NavigationMenuItem key={index}>
-                <Link href={link.href} legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    {link.name}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            );
-          }
-        })}
-      </NavigationMenuList>
-      <div
-        className="bg-primary absolute bottom-[-0.125rem] h-0.5 transition-all duration-200"
-        style={{
-          width: lineStyle.width,
-          left: lineStyle.left,
-        }}
-      />
-    </NavigationMenu>
+                </NavigationMenuItem>
+              );
+            }
+          })}
+        </NavigationMenuList>
+        <div
+          className="bg-primary absolute bottom-[-0.125rem] h-0.5 transition-all duration-200"
+          style={{
+            width: lineStyle.width,
+            left: lineStyle.left,
+          }}
+        />
+      </NavigationMenu>
+    </header>
   );
 }

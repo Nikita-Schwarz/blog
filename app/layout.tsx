@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/sidebar';
-import NavLinks from '@/components/nav-links';
+import Header from '@/components/header';
 
 const roboto = Roboto({
   subsets: ['cyrillic'],
@@ -22,9 +22,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className={`${roboto.className} antialiased`}>
         <Sidebar />
-        <header className="border-border bg-background fixed top-0 right-0 left-0 flex items-center border-b-2 lg:left-60">
-          <NavLinks />
-        </header>
+        <Header />
         <main className="mt-10 ml-0 p-5 lg:ml-60">
           <div className="mx-auto my-0 max-w-5xl px-6 py-4">{children}</div>
         </main>
