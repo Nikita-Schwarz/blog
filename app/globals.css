@@ -22,12 +22,12 @@
   --border: hsl(215 27.9% 16.9%);
   --input: hsl(215 27.9% 16.9%);
   --ring: hsl(263.4 70% 50.4%);
-  --radius: hsl(0.5rem);
   --chart-1: hsl(220 70% 50%);
   --chart-2: hsl(160 60% 45%);
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
+  --radius: 0.5rem;
 }
 
 @theme inline {
@@ -66,15 +66,6 @@
     @apply border-border scroll-smooth;
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
