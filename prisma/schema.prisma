@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                     String         @id @default(uuid())
+  nickname               String         @unique @db.VarChar(100) // @nickname
+  fullname               String
+  email                  String         @unique
+  password_hash          String
+  avatar_url             String?
+  created_at             DateTime       @default(now())
+  role                   String         @default("user")
+  posts                  Post[]
+  comments               Comment[]
+  likes                  PostLike[]
+  favorites              Favorite[]
+  notifications_received Notification[] @relation("NotificationUser")
+  notifications_sent     Notification[] @relation("NotificationAuthor")
+}
+
+model Post {
+  id           String         @id @default(uuid())
+  title        String
+  author       User           @relation(fields: [author_id], references: [id])
+  author_id    String
+  start_date   DateTime
+  end_date     DateTime
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  status       String         @default("draft")
+  likes_count  Int            @default(0)
+  sections     PostSection[]
+  comments     Comment[]
+  likes        PostLike[]
+  favorites    Favorite[]
+  Notification Notification[]
+}
+
+model PostSection {
+  id      String @id @default(uuid())
+  post    Post   @relation(fields: [post_id], references: [id])
+  post_id String
+  type    String // text, image, post-link
+  content String
+  meta    Json?
+  order   Int
+}
+
+model Comment {
+  id                String         @id @default(uuid())
+  post              Post           @relation(fields: [post_id], references: [id])
+  post_id           String
+  user              User           @relation(fields: [user_id], references: [id])
+  user_id           String
+  content           String
+  created_at        DateTime       @default(now())
+  parent_comment    Comment?       @relation("CommentHierarchy", fields: [parent_comment_id], references: [id])
+  parent_comment_id String?
+  replies           Comment[]      @relation("CommentHierarchy")
+  Notification      Notification[]
+}
+
+model PostLike {
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    String
+  post       Post     @relation(fields: [post_id], references: [id])
+  post_id    String
+  created_at DateTime @default(now())
+
+  @@id([user_id, post_id])
+}
+
+model Favorite {
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    String
+  post       Post     @relation(fields: [post_id], references: [id])
+  post_id    String
+  created_at DateTime @default(now())
+
+  @@id([user_id, post_id])
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  type       NotificationType
+  user       User             @relation("NotificationUser", fields: [user_id], references: [id])
+  user_id    String
+  author     User?            @relation("NotificationAuthor", fields: [author_id], references: [id])
+  author_id  String?
+  post       Post?            @relation(fields: [post_id], references: [id])
+  post_id    String?
+  comment    Comment?         @relation(fields: [comment_id], references: [id])
+  comment_id String?
+  is_read    Boolean          @default(false)
+  created_at DateTime         @default(now())
+  read_at    DateTime?
+
+  @@index([user_id, created_at])
+}
+
+enum NotificationType {
+  COMMENT
+  REPLY
+  LIKE
+  MENTION
+  FOLLOW
+}

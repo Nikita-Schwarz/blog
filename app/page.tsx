@@ -1,46 +1,47 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { buttonVariants } from '@/components/ui/button';
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+// app/posts/new/page.tsx
+'use client';
 
-export default function Page() {
+import { SectionEditor } from '@/components/section-editor';
+import { createPost } from '@/components/actions/post';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+export default function NewPostPage() {
+  const router = useRouter();
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async (
+    sections: Array<{
+      type: string;
+      content: string;
+      meta?: any;
+    }>,
+  ) => {
+    try {
+      setIsSaving(true);
+
+      const post = await createPost({
+        title: 'Новый пост', // Можно добавить поле для заголовка
+        sections: sections.map((s, index) => ({
+          ...s,
+          order: index + 1,
+        })),
+        authorId: 'user-123', // Получать из сессии/авторизации
+      });
+
+      router.push(`/posts/${post.id}`);
+    } catch (error) {
+      console.error('Ошибка сохранения:', error);
+      alert('Не удалось сохранить пост');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
-    <article className="container mx-auto">
-      <div className="border-primary mb-4 flex items-end justify-between border-b-2 pb-2">
-        <h1 className="text-base font-bold">Первый пост</h1>
-        <time className="text-muted-foreground text-sm" dateTime="2023-08-20">
-          20.08.2023
-        </time>
-      </div>
-      <div>
-        <p className="text-sm/loose font-medium text-balance">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. A nam autem
-          error animi eos commodi voluptatum sapiente expedita! Labore sunt
-          maxime quasi modi tempora adipisci molestias. Numquam ratione maiores
-          earum quae quasi aspernatur aliquid itaque, saepe soluta minus ullam
-          eaque magnam inventore facere sint impedit repellendus pariatur
-          <br />
-          deserunt dicta? Sequi facilis animi ipsa quo consectetur reprehenderit
-          sunt aperiam, voluptates, amet placeat cum id totam deleniti? Libero
-          voluptates ipsum reiciendis repudiandae qui error cumque nulla
-          perspiciatis itaque omnis, beatae aspernatur. Quidem voluptates
-          tempora veritatis soluta culpa unde repudiandae. Unde, maxime nobis
-          <br />
-        </p>
-        <div className="my-3 w-full">
-          <AspectRatio ratio={16 / 9} className="bg-muted rounded-md">
-            <Image
-              src={'/gallery/2.jpg'}
-              fill
-              alt="test"
-              className="h-full w-full rounded-md object-cover"
-            />
-          </AspectRatio>
-        </div>
-        <Link href={'/'} className={buttonVariants({ variant: 'ghost' })}>
-          Click here
-        </Link>
-      </div>
-    </article>
+    <div className="mx-auto max-w-4xl p-4">
+      <h1 className="mb-6 text-2xl font-bold">Создать новый пост</h1>
+      <SectionEditor onSave={handleSave} isSaving={isSaving} />
+    </div>
   );
 }
